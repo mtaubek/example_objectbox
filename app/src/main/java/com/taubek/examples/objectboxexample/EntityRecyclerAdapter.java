@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.List;
@@ -18,34 +19,44 @@ public class EntityRecyclerAdapter extends RecyclerView.Adapter<EntityRecyclerAd
 
     List<Contact> contactList;
     Context context;
-    View view1;
-    ViewHolder viewHolder1;
+    private OnClickDelete onClickDelete;
 
     public EntityRecyclerAdapter(Context context, List<Contact> contactList) {
         this.contactList = contactList;
         this.context = context;
     }
 
+    public void setContactList(List<Contact> contactList) {
+        this.contactList = contactList;
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView tvFirstname;
+        public Button button;
 
         public ViewHolder(View v) {
             super(v);
             tvFirstname = (TextView) v.findViewById(R.id.entity_textview);
+            button = (Button) v.findViewById(R.id.entity_delete_btn);
         }
     }
 
     @Override
     public EntityRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        view1 = LayoutInflater.from(context).inflate(R.layout.entity_item, parent, false);
-        viewHolder1 = new ViewHolder(view1);
-        return viewHolder1;
+        View view = LayoutInflater.from(context).inflate(R.layout.entity_item, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         holder.tvFirstname.setText(contactList.get(position).getFirstname());
+        holder.button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onClickDelete.onDelete(contactList.get(position));
+            }
+        });
     }
 
     @Override
@@ -53,4 +64,11 @@ public class EntityRecyclerAdapter extends RecyclerView.Adapter<EntityRecyclerAd
         return contactList.size();
     }
 
+    public void setOnClickDelete(OnClickDelete onClickDelete) {
+        this.onClickDelete = onClickDelete;
+    }
+
+    interface OnClickDelete {
+        void onDelete(Contact contact);
+    }
 }
